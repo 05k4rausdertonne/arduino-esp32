@@ -822,7 +822,7 @@ int BLEServer::handleGATTServerEvent(struct ble_gap_event *event, void *arg) {
 
     case BLE_GAP_EVENT_LINK_ESTAB:
     {
-      uint16_t conn_handle = event->link.conn.conn_handle;
+      uint16_t conn_handle = event->link_estab.conn_handle;
       log_i("Link established; conn_handle=%u", conn_handle);
 
       if (server->m_connectedCount > 0) {
