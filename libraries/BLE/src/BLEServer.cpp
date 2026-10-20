@@ -820,6 +820,26 @@ int BLEServer::handleGATTServerEvent(struct ble_gap_event *event, void *arg) {
       return 0;
     }  // BLE_GAP_EVENT_CONNECT
 
+    case BLE_GAP_EVENT_LINK_ESTAB:
+    {
+      uint16_t conn_handle = event->link.conn.conn_handle;
+      log_i("Link established; conn_handle=%u", conn_handle);
+
+      if (server->m_connectedCount > 0) {
+        return 0;
+      }
+
+      server->addPeerDevice((void *)server, false, conn_handle);
+      server->m_connectedCount++;
+
+      rc = ble_gap_conn_find(conn_handle, &desc);
+      if (rc == 0 && server->m_pServerCallbacks != nullptr) {
+        server->m_pServerCallbacks->onConnect(server, &desc);
+      }
+
+      return 0;
+    }  // BLE_GAP_EVENT_LINK_ESTAB
+
     case BLE_GAP_EVENT_DISCONNECT:
     {
       // If Host reset tell the device now before returning to prevent
